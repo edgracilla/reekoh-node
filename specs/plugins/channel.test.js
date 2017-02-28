@@ -57,7 +57,7 @@ describe('Channel Plugin Test', () => {
     it('should rcv `data` event', function (done) {
       this.timeout(8000)
 
-      let dummyData = { 'foo': 'bar' }
+      let dummyData = {'foo': 'bar'}
       _channel.sendToQueue(INTPUT_PIPE, new Buffer(JSON.stringify(dummyData)))
 
       _plugin.on('data', (data) => {

@@ -67,7 +67,7 @@ describe('Gateway Plugin Test', () => {
     })
 
     it('should rcv `command` event', (done) => {
-      let dummyData = { 'foo': 'bar' }
+      let dummyData = {'foo': 'bar'}
 
       _channel.sendToQueue(COMMAND_RELAYS, new Buffer(JSON.stringify(dummyData)))
 
