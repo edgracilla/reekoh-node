@@ -4,7 +4,6 @@ let amqp = require('amqplib')
 let Reekoh = require('../../index.js')
 let isEqual = require('lodash.isequal')
 
-
 describe('Logger Plugin Test', () => {
   let _conn = null
   let _plugin = null
@@ -46,7 +45,7 @@ describe('Logger Plugin Test', () => {
 
   describe('#events', () => {
     it('should receive data from input pipe queue', (done) => {
-      let dummyData = { 'foo': 'bar' }
+      let dummyData = {'foo': 'bar'}
       _channel.sendToQueue('lip.1', new Buffer(JSON.stringify(dummyData)))
 
       _plugin.on('log', (data) => {

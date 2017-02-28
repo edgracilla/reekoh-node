@@ -46,10 +46,14 @@ describe('Exception Logger Plugin Test', () => {
   describe('#events', () => {
     it('should receive data from input pipe queue', (done) => {
       let dummyData = new Error('test')
-      _channel.sendToQueue('lipexcp.1', new Buffer(JSON.stringify({message: dummyData.message, stack: dummyData.stack, name:dummyData.name})))
+      _channel.sendToQueue('lipexcp.1', new Buffer(JSON.stringify({
+        message: dummyData.message,
+        stack: dummyData.stack,
+        name: dummyData.name
+      })))
 
       _plugin.on('exception', (data) => {
-        if (!isEqual(data, {message: dummyData.message, stack: dummyData.stack, name:dummyData.name})) {
+        if (!isEqual(data, {message: dummyData.message, stack: dummyData.stack, name: dummyData.name})) {
           done(new Error('received data not matched'))
         } else {
           done()
