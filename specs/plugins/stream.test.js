@@ -54,10 +54,11 @@ describe('Stream Plugin Test', () => {
 
   describe('#events', () => {
     it('should receive `command` event', (done) => {
-      let dummyData = { 'foo': 'bar' }
-      _channel.sendToQueue('cr1', new Buffer(JSON.stringify(dummyData)))
+      let dummyData = { 'foo': 'bar', 'sequenceId': 'seq123'}
+      _channel.sendToQueue('cr1.topic', new Buffer(JSON.stringify(dummyData)))
 
       _plugin.on('command', (data) => {
+        dummyData.sequenceId = undefined
         if (!isEqual(data, dummyData)) {
           done(new Error('received data not matched'))
         } else {
