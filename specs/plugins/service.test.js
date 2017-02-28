@@ -31,8 +31,8 @@ describe('Service Plugin Test', () => {
         _conn = conn
         return conn.createChannel()
       }).then((channel) => {
-        _channel = channel
-      }).catch(errLog)
+      _channel = channel
+    }).catch(errLog)
   })
 
   after('#terminate connection', (done) => {
@@ -55,7 +55,7 @@ describe('Service Plugin Test', () => {
 
   describe('#events', () => {
     it('should receive `data` event', (done) => {
-      let dummyData = { 'foo': 'bar' }
+      let dummyData = {'foo': 'bar'}
       _channel.sendToQueue('sip1', new Buffer(JSON.stringify(dummyData)))
 
       _plugin.on('data', (data) => {
@@ -74,12 +74,12 @@ describe('Service Plugin Test', () => {
         .then(() => {
           done(new Error('Reject expected.'))
         }).catch((err) => {
-          if (!isEqual(err, new Error('Please specify the original data and the result.'))) {
-            done(new Error('Return value did not match.'))
-          } else {
-            done()
-          }
-        })
+        if (!isEqual(err, new Error('Please specify the original data and the result.'))) {
+          done(new Error('Return value did not match.'))
+        } else {
+          done()
+        }
+      })
     })
   })
 
@@ -89,8 +89,8 @@ describe('Service Plugin Test', () => {
         .then(() => {
           done()
         }).catch(() => {
-          done(new Error('send using logger fail.'))
-        })
+        done(new Error('send using logger fail.'))
+      })
     })
 
     it('should send an exception log to exception logger queues', (done) => {
@@ -98,8 +98,8 @@ describe('Service Plugin Test', () => {
         .then(() => {
           done()
         }).catch(() => {
-          done(new Error('send using exception logger fail.'))
-        })
+        done(new Error('send using exception logger fail.'))
+      })
     })
   })
 })

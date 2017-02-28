@@ -1,17 +1,37 @@
 'use strict'
 
-let gulp = require('gulp')
-let mocha = require('gulp-mocha')
-let nodemon = require('gulp-nodemon')
-let standard = require('gulp-standard')
-
-let paths = {
+const PATHS = {
   js: ['*.js', '*/*.js', '*/**/*.js', '!node_modules/**'],
-  tests: ['specs/*.test.js', 'specs/**/*.test.js']
+  json: ['*.json', '*/*.json', '*/**/*.json', '!node_modules/**'],
+  specs: ['specs/*.js', 'specs/**/*.js']
 }
 
+let gulp = require('gulp')
+let mocha = require('gulp-mocha')
+let jshint = require('gulp-jshint')
+let plumber = require('gulp-plumber')
+let jsonlint = require('gulp-json-lint')
+let standard = require('gulp-standard')
+
+gulp.task('js-lint', function () {
+  return gulp.src(PATHS.js)
+    .pipe(plumber())
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'))
+    .pipe(jshint.reporter('fail'))
+})
+
+gulp.task('json-lint', function () {
+  return gulp.src(PATHS.json)
+    .pipe(plumber())
+    .pipe(jsonlint({
+      comments: true
+    }))
+    .pipe(jsonlint.report())
+})
+
 gulp.task('standard', function () {
-  return gulp.src(paths.js)
+  return gulp.src(PATHS.js)
     .pipe(standard())
     .pipe(standard.reporter('default', {
       breakOnError: true,
@@ -19,24 +39,11 @@ gulp.task('standard', function () {
     }))
 })
 
-gulp.task('watch', function () {
-  gulp.watch(paths.js, ['standard'])
-})
-
 gulp.task('run-tests', function () {
-  return gulp.src(paths.tests)
+  return gulp.src(PATHS.specs)
     .pipe(mocha({reporter: 'spec'}))
 })
 
-gulp.task('run', function () {
-  nodemon({
-    script: 'app.js',
-    ext: 'js',
-    watch: paths.js,
-    ignore: ['node_modules', 'public', 'public/lib', '.idea', '.git'],
-    restartable: 'rs'
-  })
-})
-
-gulp.task('test', ['run-tests'])
-gulp.task('default', ['run', 'watch'])
+gulp.task('lint', ['js-lint', 'json-lint', 'standard'])
+gulp.task('test', ['lint', 'run-tests'])
+gulp.task('default', ['test'])

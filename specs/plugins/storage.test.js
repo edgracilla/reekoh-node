@@ -54,7 +54,7 @@ describe('Storage Plugin Test', () => {
     })
 
     it('should rcv `data` event', (done) => {
-      let dummyData = { 'foo': 'bar' }
+      let dummyData = {'foo': 'bar'}
       _channel.sendToQueue(INPUT_PIPE, new Buffer(JSON.stringify(dummyData)))
 
       _plugin.on('data', (data) => {

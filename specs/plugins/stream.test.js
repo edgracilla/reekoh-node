@@ -31,8 +31,8 @@ describe('Stream Plugin Test', () => {
         _conn = conn
         return conn.createChannel()
       }).then((channel) => {
-        _channel = channel
-      }).catch(errLog)
+      _channel = channel
+    }).catch(errLog)
   })
 
   after('#terminate connection', (done) => {
@@ -54,7 +54,7 @@ describe('Stream Plugin Test', () => {
 
   describe('#events', () => {
     it('should receive `command` event', (done) => {
-      let dummyData = { 'foo': 'bar', 'sequenceId': 'seq123'}
+      let dummyData = {'foo': 'bar', 'sequenceId': 'seq123'}
       _channel.sendToQueue('cr1.topic', new Buffer(JSON.stringify(dummyData)))
 
       _plugin.on('command', (data) => {
@@ -68,7 +68,7 @@ describe('Stream Plugin Test', () => {
     })
 
     it('should receive `sync` event', (done) => {
-      let dummyData = { 'foo': 'bar' }
+      let dummyData = {'foo': 'bar'}
       _channel.sendToQueue('plugin1', new Buffer(JSON.stringify(dummyData)))
 
       _plugin.on('sync', () => {
@@ -83,8 +83,8 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           return done()
         }).catch((err) => {
-          done(err)
-        })
+        done(err)
+      })
     })
 
     it('should spawn temporary RPC server', (done) => {
@@ -100,10 +100,10 @@ describe('Stream Plugin Test', () => {
           return queue.serverConsume(sampleServerProcedure)
         }).then(() => {
         // Awaiting RPC requests
-          done()
-        }).catch((err) => {
-          done(err)
-        })
+        done()
+      }).catch((err) => {
+        done(err)
+      })
     })
   })
 
@@ -114,12 +114,12 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           // noop!
         }).catch((err) => {
-          if (!isEqual(err, new Error('Please specify the device identifier.'))) {
-            done(new Error('Return value did not match.'))
-          } else {
-            done()
-          }
-        })
+        if (!isEqual(err, new Error('Please specify the device identifier.'))) {
+          done(new Error('Return value did not match.'))
+        } else {
+          done()
+        }
+      })
     })
 
     it('should request device info', (done) => {
@@ -127,8 +127,8 @@ describe('Stream Plugin Test', () => {
         .then((reply) => {
           done()
         }).catch((err) => {
-          done(err)
-        })
+        done(err)
+      })
     })
   })
 
@@ -138,12 +138,12 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done(new Error('Reject expected.'))
         }).catch((err) => {
-          if (!isEqual(err, new Error('Invalid data received. Data should be an Object and should not be empty.'))) {
-            done(new Error('Return value did not match.'))
-          } else {
-            done()
-          }
-        })
+        if (!isEqual(err, new Error('Invalid data received. Data should be an Object and should not be empty.'))) {
+          done(new Error('Return value did not match.'))
+        } else {
+          done()
+        }
+      })
     })
 
     it('should publish data to output pipes', (done) => {
@@ -151,8 +151,8 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done()
         }).catch((err) => {
-          done(err)
-        })
+        done(err)
+      })
     })
 
     it('should publish data to sanitizer', (done) => {
@@ -160,8 +160,8 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done()
         }).catch((err) => {
-          done(err)
-        })
+        done(err)
+      })
     })
   })
 
@@ -195,12 +195,12 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done(new Error('Reject expected.'))
         }).catch((err) => {
-          if (!isEqual(new Error('Please specify the device identifier.'), err)) {
-            done(new Error('Return value did not match.'))
-          } else {
-            done()
-          }
-        })
+        if (!isEqual(new Error('Please specify the device identifier.'), err)) {
+          done(new Error('Return value did not match.'))
+        } else {
+          done()
+        }
+      })
     })
 
     it('should publish a message to device', (done) => {
@@ -208,8 +208,8 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done()
         }).catch((err) => {
-          done(err)
-        })
+        done(err)
+      })
     })
   })
 
@@ -219,12 +219,12 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done(new Error('Reject expected.'))
         }).catch((err) => {
-          if (!isEqual(new Error('Please specify the device identifier.'), err)) {
-            done(new Error('Return value did not match.'))
-          } else {
-            done()
-          }
-        })
+        if (!isEqual(new Error('Please specify the device identifier.'), err)) {
+          done(new Error('Return value did not match.'))
+        } else {
+          done()
+        }
+      })
     })
 
     it('should publish a message to device', (done) => {
@@ -232,8 +232,8 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done()
         }).catch((err) => {
-          done(err)
-        })
+        done(err)
+      })
     })
   })
 
@@ -243,12 +243,12 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done(new Error('Reject expected.'))
         }).catch((err) => {
-          if (!isEqual(new Error('Please specify the device identifier.'), err)) {
-            done(new Error('Return value did not match.'))
-          } else {
-            done()
-          }
-        })
+        if (!isEqual(new Error('Please specify the device identifier.'), err)) {
+          done(new Error('Return value did not match.'))
+        } else {
+          done()
+        }
+      })
     })
 
     it('should throw error if state is empty', (done) => {
@@ -256,20 +256,20 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done(new Error('Reject expected.'))
         }).catch((err) => {
-          if (!isEqual(err, new Error('Please specify the device state.'))) {
-            done(new Error('Return value did not match.'))
-          } else {
-            done()
-          }
-        })
+        if (!isEqual(err, new Error('Please specify the device state.'))) {
+          done(new Error('Return value did not match.'))
+        } else {
+          done()
+        }
+      })
     })
     it('should publish state msg to queue', (done) => {
       _plugin.setDeviceState('foo', 'bar')
         .then(() => {
           done()
         }).catch((err) => {
-          done(err)
-        })
+        done(err)
+      })
     })
   })
 
@@ -279,8 +279,8 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done()
         }).catch(() => {
-          done(new Error('send using logger fail.'))
-        })
+        done(new Error('send using logger fail.'))
+      })
     })
 
     it('should send an exception log to exception logger queues', (done) => {
@@ -288,8 +288,8 @@ describe('Stream Plugin Test', () => {
         .then(() => {
           done()
         }).catch(() => {
-          done(new Error('send using exception logger fail.'))
-        })
+        done(new Error('send using exception logger fail.'))
+      })
     })
   })
 })
