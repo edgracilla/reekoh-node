@@ -11,7 +11,9 @@ describe('Connector Plugin Test', () => {
   let _channel = null
   let _conn = null
 
-  let errLog = (err) => { console.log(err) }
+  let errLog = (err) => {
+    console.log(err)
+  }
 
   before('#test init', () => {
     process.env.PLUGIN_ID = 'plugin1'
@@ -31,8 +33,8 @@ describe('Connector Plugin Test', () => {
         _conn = conn
         return conn.createChannel()
       }).then((channel) => {
-        _channel = channel
-      }).catch(errLog)
+      _channel = channel
+    }).catch(errLog)
   })
 
   after('#terminate connection', (done) => {
@@ -55,7 +57,7 @@ describe('Connector Plugin Test', () => {
 
   describe('#events', () => {
     it('should receive `data` event', (done) => {
-      let dummyData = { 'foo': 'bar' }
+      let dummyData = {'foo': 'bar'}
       _channel.sendToQueue('cip1', new Buffer(JSON.stringify(dummyData)))
 
       _plugin.on('data', (data) => {
@@ -74,8 +76,8 @@ describe('Connector Plugin Test', () => {
         .then(() => {
           done()
         }).catch(() => {
-          done(new Error('send using logger fail.'))
-        })
+        done(new Error('send using logger fail.'))
+      })
     })
 
     it('should send an exception log to exception logger queues', (done) => {
@@ -83,8 +85,8 @@ describe('Connector Plugin Test', () => {
         .then(() => {
           done()
         }).catch(() => {
-          done(new Error('send using exception logger fail.'))
-        })
+        done(new Error('send using exception logger fail.'))
+      })
     })
   })
 })
