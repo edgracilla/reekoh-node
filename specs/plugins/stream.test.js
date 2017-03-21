@@ -1,6 +1,6 @@
+/* global describe, it, before, after */
 'use strict'
 
-const async = require('async')
 const amqp = require('amqplib')
 const Reekoh = require('../../index.js')
 const isEqual = require('lodash.isequal')
@@ -58,7 +58,7 @@ describe('Stream Plugin Test', () => {
       _channel.sendToQueue('cr1.topic', new Buffer(JSON.stringify(dummyData)))
 
       _plugin.on('command', (data) => {
-        dummyData.sequenceId = undefined
+        delete dummyData.sequenceId
         if (!isEqual(data, dummyData)) {
           done(new Error('received data not matched'))
         } else {
@@ -87,8 +87,8 @@ describe('Stream Plugin Test', () => {
       })
     })
 
-    it('should spawn temporary RPC server', (done) => {
-      // if request arrives this proc will be called
+    it('should spawn temporary deviceinfo RPC server', (done) => {
+// if request arrives this proc will be called
       let sampleServerProcedure = (msg) => {
         return new Promise((resolve, reject) => {
           resolve(JSON.stringify(msg.content))
@@ -99,7 +99,7 @@ describe('Stream Plugin Test', () => {
         .then((queue) => {
           return queue.serverConsume(sampleServerProcedure)
         }).then(() => {
-        // Awaiting RPC requests
+// Awaiting RPC requests
         done()
       }).catch((err) => {
         done(err)
@@ -112,7 +112,7 @@ describe('Stream Plugin Test', () => {
     it('should throw error if deviceId is empty', (done) => {
       _plugin.requestDeviceInfo('')
         .then(() => {
-          // noop!
+// noop!
         }).catch((err) => {
         if (!isEqual(err, new Error('Please specify the device identifier.'))) {
           done(new Error('Return value did not match.'))
@@ -266,6 +266,72 @@ describe('Stream Plugin Test', () => {
     it('should publish state msg to queue', (done) => {
       _plugin.setDeviceState('foo', 'bar')
         .then(() => {
+          done()
+        }).catch((err) => {
+        done(err)
+      })
+    })
+  })
+
+  describe('#setState()', function () {
+    it('should throw error if state is empty', (done) => {
+      _plugin.setState(null)
+        .then(() => {
+          done(new Error('Reject expected.'))
+        })
+        .catch((err) => {
+          if (!isEqual(new Error('Please specify a state to set.'), err)) {
+            done(new Error('Return value did not match.'))
+          } else {
+            done()
+          }
+        })
+    })
+
+    it('should publish state plugin.state to queue', (done) => {
+      _plugin.setState(JSON.stringify({lastSyncData: Date.now()}))
+        .then(() => {
+          done()
+        }).catch(done)
+    })
+  })
+
+  describe('#RPC', () => {
+    it('should connect to broker', (done) => {
+      _broker.connect('amqp://guest:guest@127.0.0.1/')
+        .then(() => {
+          return done()
+        }).catch((err) => {
+        done(err)
+      })
+    })
+
+    it('should spawn temporary plugin.state.rpc RPC server', (done) => {
+// if request arrives this proc will be called
+      let sampleServerProcedure = (msg) => {
+        return new Promise((resolve, reject) => {
+          resolve(JSON.stringify(msg.content))
+        })
+      }
+
+      _broker.createRPC('server', 'plugin.state.rpc')
+        .then((queue) => {
+          return queue.serverConsume(sampleServerProcedure)
+        }).then(() => {
+// Awaiting RPC requests
+        done()
+      }).catch((err) => {
+        done(err)
+      })
+    })
+  })
+
+  describe('.getState()', function () {
+    this.timeout(8000)
+
+    it('should request plugin state', (done) => {
+      _plugin.getState()
+        .then((reply) => {
           done()
         }).catch((err) => {
         done(err)
