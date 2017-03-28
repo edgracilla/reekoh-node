@@ -9,13 +9,14 @@ let _channel = null
 
 const async = require('async')
 const amqp = require('amqplib')
+const uuid = require('uuid/v4')
 
 const reekoh = require('../../index.js')
 const isEqual = require('lodash.isequal')
 const Broker = require('../../lib/broker.lib')
 
 const PLUGIN_ID = 'demo.gateway'
-const COMMAND_RELAYS = 'demo.cmd.relays'
+const COMMAND_RELAYS = 'demo.relay1'
 const OUTPUT_PIPES = 'demo.outpipe.1,demo.outpipe.2'
 const BROKER = 'amqp://guest:guest@127.0.0.1/'
 
@@ -66,18 +67,13 @@ describe('Gateway Plugin Test', () => {
       })
     })
 
-    it('should rcv `command` event', (done) => {
-      let dummyData = {'foo': 'bar'}
-
-      _channel.sendToQueue(COMMAND_RELAYS, new Buffer(JSON.stringify(dummyData)))
+    it('should rcv `command` event', function (done) {
+      this.timeout(10000)
 
       _plugin.on('command', (data) => {
-        if (!isEqual(data, dummyData)) {
-          if (!rerelay) done(new Error('Returned value not matched.'))
-        } else {
-          done()
-        }
+        done()
       })
+      _plugin.relayCommand('ACTIVATE', '567827489028375', '', '567827489028376')
     })
   })
 
@@ -91,25 +87,20 @@ describe('Gateway Plugin Test', () => {
     })
 
     it('should spawn temporary RPC server', (done) => {
-      // if request arrives this proc will be called
-      let sampleServerProcedure = (msg) => {
-        // console.log(msg.content.toString('utf8'))
-        return new Promise((resolve, reject) => {
-          async.waterfall([
-            async.constant(msg.content.toString('utf8')),
-            async.asyncify(JSON.parse)
-          ], (err, parsed) => {
-            if (err) return reject(err)
-            parsed.foo = 'bar'
-            resolve(JSON.stringify(parsed))
+      _broker.createRPC('server', 'deviceinfo').then((queue) => {
+        return queue.serverConsume((msg) => {
+          return new Promise((resolve, reject) => {
+            async.waterfall([
+              async.constant(msg.content.toString('utf8')),
+              async.asyncify(JSON.parse)
+            ], (err, parsed) => {
+              if (err) return reject(err)
+              parsed.foo = 'bar'
+              resolve(JSON.stringify(parsed))
+            })
           })
         })
-      }
-
-      _broker.createRPC('server', 'deviceinfo').then((queue) => {
-        return queue.serverConsume(sampleServerProcedure)
       }).then(() => {
-        // Awaiting RPC requests
         done()
       }).catch((err) => {
         done(err)

@@ -10,11 +10,15 @@ const amqp = require('amqplib')
 const reekoh = require('../../index.js')
 const isEmpty = require('lodash.isempty')
 const isEqual = require('lodash.isequal')
+const Broker = require('../../lib/broker.lib')
 
 // preserving.. plugin clears env after init
 const PLUGIN_ID = 'demo.dev-sync'
 
 describe('InventorySync Test', () => {
+
+  let _broker = new Broker()
+
   before('#test init', () => {
     process.env.LOGGERS = 'logs1,logs2'
     process.env.CONFIG = '{}'
@@ -147,7 +151,7 @@ describe('InventorySync Test', () => {
     })
   })
 
-  describe('#remove()', () => {
+  describe('#removeDevice()', () => {
     it('should throw error if deviceId is empty', (done) => {
       _plugin.removeDevice('').then(() => {
         done(new Error('Expecting rejection. Check your test data.'))
@@ -164,6 +168,63 @@ describe('InventorySync Test', () => {
       _plugin.removeDevice('test').then(() => {
         done()
       }).catch(done)
+    })
+  })
+
+  describe('#RPC', () => {
+    it('should connect to broker', (done) => {
+      _broker.connect('amqp://guest:guest@127.0.0.1/').then(() => {
+        return done()
+      }).catch((err) => {
+        done(err)
+      })
+    })
+
+    it('should spawn temporary plugin.state.rpc RPC server', (done) => {
+      _broker.createRPC('server', 'plugin.state.rpc').then((queue) => {
+        return queue.serverConsume((msg) => {
+          return new Promise((resolve, reject) => {
+            resolve(JSON.stringify(msg.content))
+          })
+        })
+      }).then(() => {
+        return done()
+      }).catch((err) => {
+        done(err)
+      })
+    })
+  })
+
+  describe('#setState()', () => {
+    it('should throw error if state is empty', (done) => {
+      _plugin.setState(undefined).then(() => {
+        done(new Error('Expecting rejection. Check your test data.'))
+      }).catch((err) => {
+        if (!isEqual(err.message, 'Please specify a state to set.')) {
+          done(new Error('Return value did not match.'))
+        } else {
+          done()
+        }
+      })
+    })
+
+    it('should publish state msg to queue', (done) => {
+      _plugin
+        .setState(JSON.stringify({lastSyncData: Date.now()}))
+        .then(done)
+        .catch(done)
+    })
+  })
+
+  describe('.getState()', function () {
+    this.timeout(8000)
+
+    it('should request plugin state', (done) => {
+      _plugin.getState().then((reply) => {
+        done()
+      }).catch((err) => {
+        done(err)
+      })
     })
   })
 
